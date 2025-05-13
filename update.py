@@ -34,7 +34,6 @@ def exitBoot(serialPort):
 
 
 def upload_firmware(port, filename):
-    # print("Waiting for Gecko Bootloader menu...")
     boot_prompt_detected = False
     buffer = ""
     timeout = time.time() + 10
@@ -42,7 +41,6 @@ def upload_firmware(port, filename):
         if port.in_waiting:
             data = port.read(port.in_waiting).decode(errors='ignore')
             buffer += data
-            # print(data.strip())
             if "BL >" in buffer:
                 boot_prompt_detected = True
                 break
@@ -66,14 +64,13 @@ def upload_firmware(port, filename):
         print("Did not entered in upload mode.")
         return False
 
-    # port.flush()
+
     time.sleep(1)
     def getc(size, timeout=1):
         time.sleep(0.025)
         return port.read(size) or None
     def putc(data, timeout=5):
         port.reset_output_buffer()
-        # time.sleep(0.05)  # Small delay
         return port.write(data)
     modem = XMODEM(getc, putc)
     with open(filename, 'rb') as file:
@@ -95,16 +92,16 @@ def upload_firmware(port, filename):
 if __name__ == "__main__":
     print("Available ports:")
     ports = serial.tools.list_ports.comports()
-    port_name = ports[0].device
+    port_name = None
+
     for i, port in enumerate(ports, 1):
         print(f"{i}. {port.device} - {port.description}")
-        # if "Silicon Labs CP210x" in port.description:
-        #     port_name = port.device
-
+        if "Silicon Labs CP210x" in port.description or "Zigbee" in port.description:
+            port_name = port.device
     if port_name:
         print(f"\nSelected port: {port_name}")
     else:
-        print("\nNo device with found.")
+        print("\nNo device with matching description found.")
         exit()
 
     firmware_file = "7-4-4.gbl"
