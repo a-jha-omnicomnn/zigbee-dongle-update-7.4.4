@@ -95,16 +95,16 @@ def upload_firmware(port, filename):
 if __name__ == "__main__":
     print("Available ports:")
     ports = serial.tools.list_ports.comports()
-    port_name = None
+    port_name = ports[0].device
     for i, port in enumerate(ports, 1):
         print(f"{i}. {port.device} - {port.description}")
-        if "Silicon Labs CP210x" in port.description:
-            port_name = port.device
+        # if "Silicon Labs CP210x" in port.description:
+        #     port_name = port.device
 
     if port_name:
         print(f"\nSelected port: {port_name}")
     else:
-        print("\nNo device with 'Silicon Labs CP210x' found.")
+        print("\nNo device with found.")
         exit()
 
     firmware_file = "7-4-4.gbl"
